@@ -1,0 +1,19 @@
+{
+    "name": "blinkscore/app",
+    "description": "Blinkscore application",
+    "type": "project",
+    "require": {
+        "composer": "^2.7",
+        "phpmailer/phpmailer": "^6.11"
+    },
+    "autoload": {
+        "psr-4": {
+            "Blinkscore\\App\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Webify"
+        }
+    ]
+}

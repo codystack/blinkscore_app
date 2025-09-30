@@ -67,7 +67,14 @@
         document.getElementById("loginForm").addEventListener("submit", function(e) {
             e.preventDefault();
 
-            const formData = new FormData(this);
+            const form = this;
+            const submitBtn = form.querySelector("button[type='submit']");
+
+            // disable button immediately
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Logging in...";
+
+            const formData = new FormData(form);
 
             fetch("./auth/login_auth.php", {
                 method: "POST",
@@ -100,9 +107,15 @@
             .catch(err => {
                 Swal.fire({ icon: "error", title: "Error", text: "Server not responding." });
                 console.error(err);
+            })
+            .finally(() => {
+                // re-enable button in case login failed
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Login";
             });
         });
     </script>
+
 
 </body>
 

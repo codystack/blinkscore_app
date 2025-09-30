@@ -71,7 +71,14 @@
         document.getElementById("signupForm").addEventListener("submit", function(e) {
             e.preventDefault(); // stop normal form submission
 
-            const formData = new FormData(this);
+            const form = this;
+            const submitBtn = form.querySelector("button[type='submit']");
+
+            // disable button + change text
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Signing up...";
+
+            const formData = new FormData(form);
 
             fetch("./auth/signup_auth.php", {
                 method: "POST",
@@ -84,7 +91,7 @@
                         icon: "success",
                         title: "Success!",
                         text: data.message,
-                        timer: 5000,               // auto close after 3 seconds
+                        timer: 5000,
                         timerProgressBar: true,
                         showConfirmButton: false
                     }).then(() => {
@@ -95,7 +102,7 @@
                         icon: "error",
                         title: "Oops...",
                         text: data.message,
-                        timer: 5000,               // auto close after 3 seconds
+                        timer: 5000,
                         timerProgressBar: true,
                         showConfirmButton: false
                     });
@@ -108,9 +115,15 @@
                     text: "Something went wrong. Please try again."
                 });
                 console.error(err);
+            })
+            .finally(() => {
+                // re-enable button in case of failure
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Sign Up";
             });
         });
     </script>
+
 
 </body>
 

@@ -57,47 +57,61 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        document.getElementById("forgotForm").addEventListener("submit", function(e) {
+        document.getElementById("forgotForm").addEventListener("submit", async (e) => {
             e.preventDefault();
 
-            const formData = new FormData(this);
+            const form = e.target;
+            const submitBtn = form.querySelector("button[type='submit']");
 
-            fetch("./auth/forgot_password_auth.php", {
-                method: "POST",
-                body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
+            // Disable button to prevent double-click
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Sending...";
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch("./auth/forgot_password_auth.php", {
+                    method: "POST",
+                    body: formData
+                });
+
+                // Ensure backend returns JSON
+                const result = await response.json();
+
+                if (result.success) {
                     Swal.fire({
                         icon: "success",
-                        title: "Email Sent",
-                        text: data.message,
-                        timer: 5000,
-                        timerProgressBar: true,
+                        title: "Success",
+                        text: result.message,
+                        timer: 4000,
                         showConfirmButton: false
                     });
+                    form.reset();
                 } else {
                     Swal.fire({
                         icon: "error",
-                        title: "Failed",
-                        text: data.message,
-                        timer: 5000,
-                        timerProgressBar: true,
-                        showConfirmButton: false
+                        title: "Oops...",
+                        text: result.message
                     });
                 }
-            })
-            .catch(err => {
+
+            } catch (error) {
                 Swal.fire({
                     icon: "error",
-                    title: "Error",
-                    text: "Server not responding."
+                    title: "Server Error",
+                    text: "Something went wrong. Please try again later."
                 });
-                console.error(err);
-            });
+                console.error("Fetch/JSON Error:", error);
+            } finally {
+                // Re-enable button after process
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Send Reset Link";
+            }
         });
     </script>
+
+
+
 </body>
 
 </html>

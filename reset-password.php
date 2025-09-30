@@ -46,7 +46,7 @@
 
                 <div class="gaps-2x"></div>
                     <div class="form-note text-center">
-                        <a href="login" class="text-secondary"><strong>Back to Login</strong></a>
+                        <a href="./" class="text-secondary"><strong>Back to Login</strong></a>
                     </div>
                 </div>
             <div class="page-ath-footer">
@@ -86,7 +86,7 @@
                         timerProgressBar: true,
                         showConfirmButton: false
                     }).then(() => {
-                        window.location.href = "login"; // redirect to login after success
+                        window.location.href = "./"; // redirect to login after success
                     });
                 } else {
                     Swal.fire({
