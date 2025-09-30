@@ -4,7 +4,7 @@ ini_set('log_errors', 1);       // log errors to server
 error_reporting(E_ALL);
 
 session_start();
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=UTF-8');
 
 require_once __DIR__ . '/../config/db.php';   // $pdo
 require_once __DIR__ . '/../utils/mailer.php'; // sendMail()
@@ -25,7 +25,7 @@ try {
     // Check user
     $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
     $stmt->execute([$email]);
-    $user = $stmt->fetch();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$user) {
         echo json_encode(["success" => false, "message" => "No account found with that email."]);
@@ -36,7 +36,7 @@ try {
     $token = bin2hex(random_bytes(32));
     $expires_at = date("Y-m-d H:i:s", strtotime("+1 hour"));
 
-    // Save token
+    // Save token (update if exists)
     $insert = $pdo->prepare("
         INSERT INTO password_resets (user_id, token, expires_at) 
         VALUES (?, ?, ?)
@@ -44,14 +44,14 @@ try {
     ");
     $insert->execute([$user['id'], $token, $expires_at]);
 
-    // Environment
+    // Environment detection
     $env = (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false) ? 'development' : 'production';
 
     $reset_link = $env === 'development'
         ? "http://localhost/blinkscore_app/reset-password?token=$token"
         : "https://app.blinkscore.ng/reset-password?token=$token";
 
-    // Email Template
+    // Email content
     $subject = "Password Reset Request";
 
     $bodyHtml = "
@@ -108,15 +108,18 @@ try {
     if (sendMail($email, $subject, $bodyHtml)) {
         $response = ["success" => true, "message" => "We’ve sent a password reset link to your email."];
         if ($env === 'development') {
-            $response["debug_link"] = $reset_link; // for testing only
+            $response["debug_link"] = $reset_link; // show in dev only
         }
         echo json_encode($response);
+        exit;
     } else {
         echo json_encode(["success" => false, "message" => "Email could not be sent. Please try again later."]);
+        exit;
     }
 
-} catch (Exception $e) {
+} catch (Throwable $e) {
     error_log("Forgot password error: " . $e->getMessage());
     http_response_code(500);
     echo json_encode(["success" => false, "message" => "Server error. Please try again later."]);
+    exit;
 }
