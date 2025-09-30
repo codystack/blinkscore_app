@@ -88,7 +88,7 @@
                         timerProgressBar: true,
                         showConfirmButton: false
                     }).then(() => {
-                        window.location.href = "index"; // redirect after success
+                        window.location.href = "./"; // redirect after success
                     });
                 } else {
                     Swal.fire({
