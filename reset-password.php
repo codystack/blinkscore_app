@@ -61,68 +61,54 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        document.getElementById("forgotForm").addEventListener("submit", async (e) => {
+        // Get token from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get("token");
+        document.getElementById("token").value = token;
+
+        document.getElementById("resetForm").addEventListener("submit", function(e) {
             e.preventDefault();
 
-            const form = e.target;
-            const submitBtn = form.querySelector("button[type='submit']");
+            const formData = new FormData(this);
 
-            // Disable button to prevent multiple clicks
-            submitBtn.disabled = true;
-            submitBtn.textContent = "Sending...";
-
-            const formData = new FormData(form);
-
-            try {
-                const response = await fetch("./auth/forgot_password_auth.php", {
-                    method: "POST",
-                    body: formData
-                });
-
-                // If server did not return JSON
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-
-                let result;
-                try {
-                    result = await response.json();
-                } catch (jsonErr) {
-                    throw new Error("Invalid JSON response from server");
-                }
-
-                if (result.success) {
+            fetch("./auth/reset_password_auth.php", {
+                method: "POST",
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
                     Swal.fire({
                         icon: "success",
-                        title: "Success",
-                        text: result.message,
+                        title: "Password Reset Successful",
+                        text: data.message,
                         timer: 4000,
+                        timerProgressBar: true,
                         showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = "./"; // redirect to login after success
                     });
-                    form.reset();
                 } else {
                     Swal.fire({
                         icon: "error",
-                        title: "Oops...",
-                        text: result.message || "Something went wrong."
+                        title: "Reset Failed",
+                        text: data.message,
+                        timer: 5000,
+                        timerProgressBar: true,
+                        showConfirmButton: false
                     });
                 }
-
-            } catch (error) {
+            })
+            .catch(err => {
                 Swal.fire({
                     icon: "error",
-                    title: "Server Error",
-                    text: error.message || "Something went wrong. Please try again later."
+                    title: "Error",
+                    text: "Server not responding."
                 });
-                console.error("Forgot-password JS Error:", error);
-            } finally {
-                // Re-enable button
-                submitBtn.disabled = false;
-                submitBtn.textContent = "Send Reset Link";
-            }
+                console.error(err);
+            });
         });
     </script>
-
 </body>
 
 </html>

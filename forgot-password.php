@@ -55,7 +55,6 @@
     <script src="assets/js/jquery.bundle.js"></script>
     <script src="assets/js/script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
         document.getElementById("forgotForm").addEventListener("submit", async (e) => {
             e.preventDefault();
@@ -63,7 +62,7 @@
             const form = e.target;
             const submitBtn = form.querySelector("button[type='submit']");
 
-            // Disable button to prevent double-click
+            // Disable button to prevent multiple clicks
             submitBtn.disabled = true;
             submitBtn.textContent = "Sending...";
 
@@ -75,8 +74,17 @@
                     body: formData
                 });
 
-                // Ensure backend returns JSON
-                const result = await response.json();
+                // If server did not return JSON
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                let result;
+                try {
+                    result = await response.json();
+                } catch (jsonErr) {
+                    throw new Error("Invalid JSON response from server");
+                }
 
                 if (result.success) {
                     Swal.fire({
@@ -91,7 +99,7 @@
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: result.message
+                        text: result.message || "Something went wrong."
                     });
                 }
 
@@ -99,17 +107,16 @@
                 Swal.fire({
                     icon: "error",
                     title: "Server Error",
-                    text: "Something went wrong. Please try again later."
+                    text: error.message || "Something went wrong. Please try again later."
                 });
-                console.error("Fetch/JSON Error:", error);
+                console.error("Forgot-password JS Error:", error);
             } finally {
-                // Re-enable button after process
+                // Re-enable button
                 submitBtn.disabled = false;
                 submitBtn.textContent = "Send Reset Link";
             }
         });
     </script>
-
 
 
 </body>
