@@ -2,7 +2,35 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require __DIR__ . '/../vendor/autoload.php'; // Composer autoload
+// Try multiple possible vendor locations
+$autoloadPaths = [
+    __DIR__ . '/../vendor/autoload.php',        // typical when utils/ is inside project root
+    __DIR__ . '/../../vendor/autoload.php',     // if utils/ is nested deeper
+    dirname(__DIR__) . '/vendor/autoload.php',  // safer relative path
+];
+
+$autoloadFound = false;
+foreach ($autoloadPaths as $path) {
+    if (file_exists($path)) {
+        require_once $path;
+        $autoloadFound = true;
+        break;
+    }
+}
+
+if (!$autoloadFound) {
+    // Return JSON-safe error if called via AJAX
+    if (php_sapi_name() !== 'cli') {
+        header('Content-Type: application/json');
+        echo json_encode([
+            "success" => false,
+            "message" => "Server misconfiguration: autoload.php not found."
+        ]);
+        exit;
+    } else {
+        throw new Exception("Composer autoload.php not found. Run composer install.");
+    }
+}
 
 function sendMail($to, $subject, $bodyHtml, $bodyAlt = '') {
     $mail = new PHPMailer(true);
@@ -18,15 +46,15 @@ function sendMail($to, $subject, $bodyHtml, $bodyAlt = '') {
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
             $mail->Username   = 'ebuzzadvert@gmail.com'; // your Gmail
-            $mail->Password   = 'buzrjirnhbxlcuio';   // Gmail App Password
+            $mail->Password   = 'buzrjirnhbxlcuio';      // Gmail App Password
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = 587;
         } else {
             // Production (custom domain SMTP)
             $mail->Host       = 'premium36.web-hosting.com'; // your mail server
             $mail->SMTPAuth   = true;
-            $mail->Username   = 'no-reply@blinkscore.ng'; // your domain email
-            $mail->Password   = '2{-*Xa]UaE,%';     // your domain email password
+            $mail->Username   = 'no-reply@blinkscore.ng';    // your domain email
+            $mail->Password   = '2{-*Xa]UaE,%';              // your domain email password
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = 587;
         }
