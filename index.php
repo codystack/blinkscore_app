@@ -31,16 +31,25 @@
             <div class="page-ath-form">
                 <h2 class="page-ath-heading mb-0 pb-0">Welcome back</h2>
                 <p class="mb-4">Securely login to your BlinksCore account</p>
-                <form action="index.html">
-                    <div class="input-item"><input type="text" placeholder="Your Email" class="input-bordered"></div>
-                    <div class="input-item"><input type="password" placeholder="Password" class="input-bordered"></div>
+                <form id="loginForm">
+                    <div class="input-item">
+                        <input type="email" name="email" placeholder="Email" required class="input-bordered">
+                    </div>
+                    <div class="input-item">
+                        <input type="password" name="password" placeholder="Password" required class="input-bordered">
+                    </div>
                     <div class="d-flex justify-content-between align-items-center">
-                        <div class="input-item text-left"><input class="input-checkbox input-checkbox-md" id="remember-me" type="checkbox"><label for="remember-me">Remember Me</label></div>
+                        <div class="input-item text-left">
+                            <input class="input-checkbox input-checkbox-md" id="remember-me" type="checkbox">
+                            <label for="remember-me">Remember Me</label>
+                        </div>
                         <div>
                             <a href="forgot-password" class="text-danger">Forgot password?</a>
                             <div class="gaps-2x"></div>
                         </div>
-                    </div><button class="btn btn-primary btn-block">Sign In</button></form>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                </form>
                 <div class="gaps-2x"></div>
                 <div class="form-note text-center">Don’t have an account? <a href="signup" class="text-secondary"> <strong>Sign up here</strong></a></div>
             </div>
@@ -53,6 +62,48 @@
 
     <script src="assets/js/jquery.bundle.js"></script>
     <script src="assets/js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            fetch("./auth/login_auth.php", {
+                method: "POST",
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Welcome back!",
+                        text: data.message,
+                        timer: 5000,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = "dashboard"; // redirect after login
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Login Failed",
+                        text: data.message,
+                        timer: 5000,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    });
+                }
+            })
+            .catch(err => {
+                Swal.fire({ icon: "error", title: "Error", text: "Server not responding." });
+                console.error(err);
+            });
+        });
+    </script>
+
 </body>
 
 </html>
