@@ -14,7 +14,7 @@
     
     <link rel="shortcut icon" href="./assets/images/favicon_light.png">
 
-    <title>BlinksCore&trade; :: Forgot Password</title>
+    <title>BlinksCore&trade; :: Reset Password</title>
 
     <link rel="stylesheet" href="assets/css/vendor.bundle.css">
     <link rel="stylesheet" href="assets/css/style.css" id="layoutstyle">
@@ -29,22 +29,26 @@
                 </a>
             </div>
             <div class="page-ath-form">
-                <h2 class="page-ath-heading">Forgot password <span>If you forgot your password, well, then we’ll email you instructions to reset your password.</span></h2>
-                <form id="forgotForm">
+                <h2 class="page-ath-heading mb-0 pb-0">Reset password</h2>
+                <p class="mb-4">Enter your new password below.</p>
+                <form id="resetForm">
+                    <!-- Hidden input for token from URL -->
+                    <input type="hidden" name="token" id="token">
+
                     <div class="input-item">
-                        <input type="email" name="email" placeholder="Email Address" required class="input-bordered">
+                        <input type="password" name="password" placeholder="New Password" required class="input-bordered">
                     </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <button type="submit" class="btn btn-primary btn-block">Send Reset Link</button>
-                        </div>
-                        <div>
-                            <a href="./" class="text-secondary">Return to login</a>
-                        </div>
+                    <div class="input-item">
+                        <input type="password" name="confirm_password" placeholder="Confirm New Password" required class="input-bordered">
                     </div>
-                    <div class="gaps-2x"></div>
+                    <button type="submit" class="btn btn-primary btn-block">Reset Password</button>
                 </form>
-            </div>
+
+                <div class="gaps-2x"></div>
+                    <div class="form-note text-center">
+                        <a href="login" class="text-secondary"><strong>Back to Login</strong></a>
+                    </div>
+                </div>
             <div class="page-ath-footer">
                 © <script>document.write(new Date().getFullYear());</script> BlinksCore&trade;. All rights reserved. Built By <a href="https://www.webify.com.ng" target="_blank" class="text-danger">Webify</a>
             </div>
@@ -57,12 +61,17 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        document.getElementById("forgotForm").addEventListener("submit", function(e) {
+        // Get token from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get("token");
+        document.getElementById("token").value = token;
+
+        document.getElementById("resetForm").addEventListener("submit", function(e) {
             e.preventDefault();
 
             const formData = new FormData(this);
 
-            fetch("./auth/forgot_password_auth.php", {
+            fetch("./auth/reset_password_auth.php", {
                 method: "POST",
                 body: formData
             })
@@ -71,16 +80,18 @@
                 if (data.success) {
                     Swal.fire({
                         icon: "success",
-                        title: "Email Sent",
+                        title: "Password Reset Successful",
                         text: data.message,
-                        timer: 5000,
+                        timer: 4000,
                         timerProgressBar: true,
                         showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = "login"; // redirect to login after success
                     });
                 } else {
                     Swal.fire({
                         icon: "error",
-                        title: "Failed",
+                        title: "Reset Failed",
                         text: data.message,
                         timer: 5000,
                         timerProgressBar: true,
