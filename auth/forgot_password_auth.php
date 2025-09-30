@@ -80,7 +80,7 @@ try {
                                     <p style='font-size:14px;color:#666;margin:0 0 15px 0;'>Hello,</p>
                                     <p style='font-size:14px;color:#666;margin:0 0 25px 0;'>We received a request to reset your BlinksCore account password. If you made this request, please click the button or the link below to set a new password.</p>
                                     <a href='$reset_link' style='background:#0E423E;color:#fff;text-decoration:none;padding:12px 20px;border-radius:5px;font-size:14px;display:inline-block;'>Reset Password</a>
-                                    <p><a href='$reset_link'>$reset_link</a></p>
+                                    <p style='margin-top:15px;'><a href='$reset_link' style='color:#0E423E;font-size:13px;'>$reset_link</a></p>
                                 </td>
                             </tr>
                             <tr>
