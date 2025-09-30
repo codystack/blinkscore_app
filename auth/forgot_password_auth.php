@@ -1,24 +1,31 @@
 <?php
-ini_set('display_errors', 0);   // hide errors from response
+ob_start(); // prevent accidental output before JSON
+ini_set('display_errors', 0);   // hide errors from user
 ini_set('log_errors', 1);       // log errors to server
 error_reporting(E_ALL);
 
 session_start();
 header('Content-Type: application/json; charset=UTF-8');
 
-require_once __DIR__ . '/../config/db.php';   // $pdo
+require_once __DIR__ . '/../config/db.php';    // $pdo
 require_once __DIR__ . '/../utils/mailer.php'; // sendMail()
 
 try {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        throw new Exception("Invalid request");
+    }
+
     $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
 
     if (!$email) {
         echo json_encode(["success" => false, "message" => "Email is required."]);
+        ob_end_flush();
         exit;
     }
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         echo json_encode(["success" => false, "message" => "Invalid email address."]);
+        ob_end_flush();
         exit;
     }
 
@@ -29,6 +36,7 @@ try {
 
     if (!$user) {
         echo json_encode(["success" => false, "message" => "No account found with that email."]);
+        ob_end_flush();
         exit;
     }
 
@@ -44,16 +52,15 @@ try {
     ");
     $insert->execute([$user['id'], $token, $expires_at]);
 
-    // Environment detection
+    // Detect environment
     $env = (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false) ? 'development' : 'production';
 
     $reset_link = $env === 'development'
         ? "http://localhost/blinkscore_app/reset-password?token=$token"
         : "https://app.blinkscore.ng/reset-password?token=$token";
 
-    // Email content
+    // Email template
     $subject = "Password Reset Request";
-
     $bodyHtml = "
     <table class='email-wraper' style='width:100%;background:#f5f6fa;font-family:Arial,sans-serif;padding:20px;'>
         <tbody>
@@ -105,21 +112,23 @@ try {
         </tbody>
     </table>";
 
-    if (sendMail($email, $subject, $bodyHtml)) {
-        $response = ["success" => true, "message" => "We’ve sent a password reset link to your email."];
-        if ($env === 'development') {
-            $response["debug_link"] = $reset_link; // show in dev only
-        }
-        echo json_encode($response);
-        exit;
-    } else {
-        echo json_encode(["success" => false, "message" => "Email could not be sent. Please try again later."]);
-        exit;
+    if (!sendMail($email, $subject, $bodyHtml)) {
+        throw new Exception("Email could not be sent. Please try again later.");
     }
+
+    $response = ["success" => true, "message" => "We’ve sent a password reset link to your email."];
+    if ($env === 'development') {
+        $response["debug_link"] = $reset_link; // show reset link in dev
+    }
+
+    echo json_encode($response);
+    ob_end_flush();
+    exit;
 
 } catch (Throwable $e) {
     error_log("Forgot password error: " . $e->getMessage());
     http_response_code(500);
     echo json_encode(["success" => false, "message" => "Server error. Please try again later."]);
+    ob_end_flush();
     exit;
 }
