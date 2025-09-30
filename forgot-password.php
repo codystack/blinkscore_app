@@ -62,7 +62,7 @@
             const form = e.target;
             const submitBtn = form.querySelector("button[type='submit']");
 
-            // Disable button to prevent multiple clicks
+            // Disable button
             submitBtn.disabled = true;
             submitBtn.textContent = "Sending...";
 
@@ -74,15 +74,18 @@
                     body: formData
                 });
 
-                // If server did not return JSON
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}`);
                 }
 
                 let result;
                 try {
+                    // Try JSON
                     result = await response.json();
                 } catch (jsonErr) {
+                    // If not JSON, get raw text for debugging
+                    const text = await response.text();
+                    console.error("Server returned non-JSON:", text);
                     throw new Error("Invalid JSON response from server");
                 }
 
@@ -111,7 +114,6 @@
                 });
                 console.error("Forgot-password JS Error:", error);
             } finally {
-                // Re-enable button
                 submitBtn.disabled = false;
                 submitBtn.textContent = "Send Reset Link";
             }
