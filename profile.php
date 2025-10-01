@@ -6,7 +6,7 @@ include "./components/top_navbar.php";
     <div class="page-content">
         <div class="container">
             <div class="row">
-                <div class="main-content col-lg-8">
+                <div class="main-content col-lg-12">
                     <div class="content-area card">
                         <div class="card-innr">
                             <div class="card-head">
@@ -60,68 +60,50 @@ include "./components/top_navbar.php";
 
                                 <!-- .tab-pane -->
                                 <div class="tab-pane fade" id="password">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="input-item input-with-label"><label for="old-pass" class="input-item-label">Old Password</label><input class="input-bordered" type="password" id="old-pass" name="old-pass"></div>
-                                            <!-- .input-item -->
+                                    <form id="passwordForm">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="input-item input-with-label">
+                                                    <label for="old-pass" class="input-item-label">Old Password</label>
+                                                    <input class="input-bordered" type="password" id="old-pass" name="old_pass" required>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <!-- .col -->
-                                    </div>
-                                    <!-- .row -->
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="input-item input-with-label"><label for="new-pass" class="input-item-label">New Password</label><input class="input-bordered" type="password" id="new-pass" name="new-pass"></div>
-                                            <!-- .input-item -->
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="input-item input-with-label">
+                                                    <label for="new-pass" class="input-item-label">New Password</label>
+                                                    <input class="input-bordered" type="password" id="new-pass" name="new_pass" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="input-item input-with-label">
+                                                    <label for="confirm-pass" class="input-item-label">Confirm New Password</label>
+                                                    <input class="input-bordered" type="password" id="confirm-pass" name="confirm_pass" required>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <!-- .col -->
-                                        <div class="col-md-6">
-                                            <div class="input-item input-with-label"><label for="confirm-pass" class="input-item-label">Confirm New Password</label><input class="input-bordered" type="password" id="confirm-pass" name="confirm-pass"></div>
-                                            <!-- .input-item -->
+
+                                        <div class="note note-plane note-info pdb-1x">
+                                            <em class="fas fa-info-circle"></em>
+                                            <p>Password should be minimum 8 characters, and include lowercase and uppercase letters.</p>
                                         </div>
-                                        <!-- .col -->
-                                    </div>
-                                    <!-- .row -->
-                                    <div class="note note-plane note-info pdb-1x"><em class="fas fa-info-circle"></em>
-                                        <p>Password should be minmum 8 letter and include lower and uppercase letter.</p>
-                                    </div>
-                                    <div class="gaps-1x"></div>
-                                    <!-- 10px gap -->
-                                    <div class="d-sm-flex justify-content-between align-items-center"><button class="btn btn-primary">Update</button>
-                                        <div class="gaps-2x d-sm-none"></div><span class="text-success"><em class="ti ti-check-box"></em>  Changed Password</span></div>
+
+                                        <div class="gaps-1x"></div>
+                                        <div class="d-sm-flex justify-content-between align-items-center">
+                                            <button type="submit" class="btn btn-primary">Update</button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- .col -->
-                <div class="aside sidebar-right col-lg-4">
-                    <div class="account-info card">
-                        <div class="card-innr">
-                            <h6 class="card-title card-title-sm">Your Account Status</h6>
-                            <ul class="btn-grp">
-                                <li><a href="#" class="btn btn-auto btn-xs btn-success">Email Verified</a></li>
-                                <li><a href="#" class="btn btn-auto btn-xs btn-warning">KYC Pending</a></li>
-                            </ul>
-                            <div class="gaps-2-5x"></div>
-                            <h6 class="card-title card-title-sm">Receiving Wallet</h6>
-                            <div class="d-flex justify-content-between">
-                                <span>
-                                    <span>0x39deb3.....e2ac64rd</span> 
-                                    <em class="fas fa-info-circle text-exlight" data-toggle="tooltip" data-placement="bottom" title="1 ETH = 100 TWZ"></em>
-                                </span>
-                                <a href="#" data-toggle="modal" data-target="#edit-wallet" class="link link-ucap">Edit</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- .col -->
             </div>
-            <!-- .container -->
         </div>
-        <!-- .container -->
     </div>
 
-    <!-- Modal -->
     <div class="modal fade" id="edit-wallet" tabindex="-1">
         <div class="modal-dialog modal-dialog-md modal-dialog-centered">
             <div class="modal-content"><a href="#" class="modal-close" data-dismiss="modal" aria-label="Close"><em class="ti ti-close"></em></a>
@@ -160,3 +142,79 @@ include "./components/top_navbar.php";
 include "./modals/profile_update_modal.php";
 include "./components/footer.php";
 ?>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const updateBtn = document.querySelector("#password button.btn.btn-primary");
+
+            updateBtn.addEventListener("click", async (e) => {
+                e.preventDefault();
+
+                const oldPass = document.getElementById("old-pass").value.trim();
+                const newPass = document.getElementById("new-pass").value.trim();
+                const confirmPass = document.getElementById("confirm-pass").value.trim();
+
+                if (!oldPass || !newPass || !confirmPass) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: "Please fill all fields.",
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append("old_pass", oldPass);
+                formData.append("new_pass", newPass);
+                formData.append("confirm_pass", confirmPass);
+
+                updateBtn.disabled = true;
+                updateBtn.textContent = "Updating...";
+
+                try {
+                    const response = await fetch("./auth/update_password.php", {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Password Updated",
+                            text: result.message,
+                            timer: 3000,
+                            showConfirmButton: false
+                        });
+                        document.getElementById("old-pass").value = "";
+                        document.getElementById("new-pass").value = "";
+                        document.getElementById("confirm-pass").value = "";
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: result.message,
+                            timer: 3000,
+                            showConfirmButton: false
+                        });
+                    }
+                } catch (err) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: "Something went wrong. Try again later.",
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                    console.error("Password Update Error:", err);
+                } finally {
+                    updateBtn.disabled = false;
+                    updateBtn.textContent = "Update";
+                }
+            });
+        });
+    </script>
