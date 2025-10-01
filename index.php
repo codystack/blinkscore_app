@@ -105,7 +105,14 @@
                 }
             })
             .catch(err => {
-                Swal.fire({ icon: "error", title: "Error", text: "Server not responding." });
+                Swal.fire({ 
+                    icon: "error", 
+                    title: "Error", 
+                    text: "Server not responding.",
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false 
+                });
                 console.error(err);
             })
             .finally(() => {

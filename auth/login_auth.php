@@ -21,7 +21,7 @@ try {
     }
 
     // Fetch user by email
-    $stmt = $pdo->prepare("SELECT id, email, password, first_name, last_name FROM users WHERE email = ?");
+    $stmt = $pdo->prepare("SELECT id, email, password, first_name, last_name, phone FROM users WHERE email = ?");
     $stmt->execute([$email]);
     $user = $stmt->fetch();
 
@@ -40,6 +40,9 @@ try {
     $_SESSION['user_id']    = $user['id'];
     $_SESSION['user_email'] = $user['email'];
     $_SESSION['user_name']  = $user['first_name'] . ' ' . $user['last_name'];
+    $_SESSION['first_name'] = $user['first_name'];
+    $_SESSION['last_name'] = $user['last_name'];
+    $_SESSION['user_phone'] = $user['phone'];
 
     echo json_encode([
         "success" => true,
