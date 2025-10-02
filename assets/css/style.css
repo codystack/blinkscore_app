@@ -316,7 +316,7 @@ p a:hover,p a:focus {
 }
 
 .datepicker table tr td.today:hover:hover,.datepicker table tr td.today.range:hover:hover,.datepicker table tr td.range:hover,.datepicker table tr td.selected,.datepicker table tr td.selected.disabled,.datepicker table tr td.selected.disabled:hover,.datepicker table tr td.selected:hover,.datepicker table tr td.selected:hover:hover,.datepicker table tr td.active.active,.datepicker table tr td.active.active:hover:hover,.datepicker table tr td span.active.active,.datepicker table tr td span.active.active:hover:hover {
-    background: #2c80ff;
+    background: #0E423E;
     color: #fff
 }
 

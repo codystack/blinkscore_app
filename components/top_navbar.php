@@ -57,12 +57,12 @@
                         <li><a href="applications"><em class="ikon ikon-distribution"></em> Applications</a></li>
 
                         <li><a href="transactions"><em class="ikon ikon-transactions"></em> Transactions</a></li>
-                        
+
                         <li><a href="profile"><em class="ikon ikon-user"></em> Profile</a></li>
                     </ul>
                     <ul class="navbar-btns">
                         <li>
-                            <a href="application" class="btn btn-sm btn-outline btn-danger">
+                            <a href="applications" class="btn btn-sm btn-outline btn-danger">
                                 <em class="text-danger ti ti-files"></em><span>POF Application</span>
                             </a>
                         </li>

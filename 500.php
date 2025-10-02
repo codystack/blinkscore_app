@@ -23,7 +23,7 @@
                         <h4 class="text-dark">Oops! Something went wrong on our end.</h4>
                         <p class="mb-0 pb-0">We’re very sorry for the inconvenience. It looks like the server is unable to handle the HTTP version of your request.</p>
                         <p class="mt-0 pt-0">Please try again later or <a href="https://blinkscore.ng/contact">contact support</a> if the issue persists.</p>
-                        <a href="./" class="btn btn-primary">Back to Home</a>
+                        <a href="dashboard" class="btn btn-primary">Back to Home</a>
                     </div>
                 </div>
             </div>
